@@ -31,8 +31,7 @@ public class LevelPlayManager : MonoBehaviour
         LevelPlay.OnInitSuccess += SdkInitializationCompletedEvent;
         LevelPlay.OnInitFailed += SdkInitializationFailedEvent;
 
-        // IronSource.Agent.setMetaData("is_test_suite", "enable");
-        Debug.Log("Initialized");
+        IronSource.Agent.setMetaData("is_test_suite", "enable");
         LevelPlay.Init(appKey, "UserId", legacyAdFormats);
     }
 
@@ -55,7 +54,7 @@ public class LevelPlayManager : MonoBehaviour
     private void SdkInitializationCompletedEvent(LevelPlayConfiguration configuration)
     {
         Debug.Log("Initialized");
-        // IronSource.Agent.launchTestSuite();
+        IronSource.Agent.launchTestSuite();
     }
 
 
