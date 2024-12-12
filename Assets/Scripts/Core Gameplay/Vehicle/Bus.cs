@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using static GameEnum;
 
 public class Bus : BaseVehicle
 {
@@ -8,7 +9,16 @@ public class Bus : BaseVehicle
 
     [SerializeField] private VehicleFaction vehicleFaction;
 
-    public override GameEnum.GameFaction GetVehicleFaction()
+    #region ACTION
+    public static event Action<BaseVehicle> vehicleLeftParkingSlotEvent;
+    #endregion
+
+    private void Awake()
+    {
+        PassengerQueue.noPassengerLeftForFactionEvent += MoveOut;
+    }
+
+    public override GameFaction GetVehicleFaction()
     {
         return vehicleFaction.Faction;
     }
@@ -27,6 +37,11 @@ public class Bus : BaseVehicle
         }
     }
 
+    private void OnDestroy()
+    {
+        PassengerQueue.noPassengerLeftForFactionEvent -= MoveOut;
+    }
+
     private IEnumerator CheckingReachingParkingSlot()
     {
         WaitForSeconds waitForSeconds = new WaitForSeconds(0.2f);
@@ -39,5 +54,15 @@ public class Bus : BaseVehicle
         }
 
         InvokeVehicleReachParkingSlotEvent();
+    }
+
+    private void MoveOut(GameFaction faction)
+    {
+        if (faction == GetVehicleFaction())
+        {
+            navMeshAgent.destination = transform.position + new Vector3(50, 0, 0);
+
+            vehicleLeftParkingSlotEvent?.Invoke(this);
+        }
     }
 }

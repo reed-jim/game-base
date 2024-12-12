@@ -44,7 +44,7 @@ public class Passenger : MonoBehaviour
         return passengerFaction.Faction;
     }
 
-    public void GetInVehicle(BaseVehicle vehicle)
+    public async void GetInVehicle(BaseVehicle vehicle)
     {
         navMeshAgent.isStopped = false;
 

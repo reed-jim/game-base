@@ -15,6 +15,7 @@ public class PassengerQueue : MonoBehaviour
 
     [Header("VEHICLE")]
     private List<GameFaction> _passengerFactionPool;
+    private List<GameFaction> _remainingPassengersFaction;
 
 
     [SerializeField] private SplineComputer pathSpline;
@@ -23,6 +24,7 @@ public class PassengerQueue : MonoBehaviour
 
     #region ACTION
     public static event Action<int, GameFaction> setPassengerFactionEvent;
+    public static event Action<GameFaction> noPassengerLeftForFactionEvent;
     #endregion
 
     private void Awake()
@@ -98,11 +100,18 @@ public class PassengerQueue : MonoBehaviour
     {
         while (_passengers.Count > 0)
         {
-            Debug.Log(vehicle.GetVehicleFaction() + "/" + _passengers.Peek().GetFaction());
+            GameFaction faction = vehicle.GetVehicleFaction();
 
-            if (vehicle.GetVehicleFaction() == _passengers.Peek().GetFaction())
+            if (faction == _passengers.Peek().GetFaction())
             {
                 _passengers.Dequeue().GetInVehicle(vehicle);
+
+                _remainingPassengersFaction.Remove(faction);
+
+                if (!_remainingPassengersFaction.Contains(faction))
+                {
+                    noPassengerLeftForFactionEvent?.Invoke(faction);
+                }
 
                 await Task.Delay(300);
             }
@@ -116,6 +125,8 @@ public class PassengerQueue : MonoBehaviour
     private void AddPassengerFactionPool(GameFaction faction)
     {
         _passengerFactionPool.Add(faction);
+
+        _remainingPassengersFaction = _passengerFactionPool;
     }
 
     private GameFaction GetPassengerFactionFromPool()
