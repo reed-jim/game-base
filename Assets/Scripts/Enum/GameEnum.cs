@@ -7,4 +7,12 @@ public class GameEnum : MonoBehaviour
         Lobby,
         LobbyRoom
     }
+
+    public enum GameFaction {
+        Red,
+        Blue,
+        Green,
+        Purple,
+        Orange
+    }
 }
