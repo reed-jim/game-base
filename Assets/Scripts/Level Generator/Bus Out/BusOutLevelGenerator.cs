@@ -9,6 +9,7 @@ public class BusOutLevelGenerator : MonoBehaviour
     [SerializeField] private float tileSize;
     [SerializeField] private int areaRow;
     [SerializeField] private int areaColumn;
+    [SerializeField] private float maxAngleVariationMagnitude;
 
     #region PRIVATE FIELD
     private bool[] isTilesChecked;
@@ -72,19 +73,81 @@ public class BusOutLevelGenerator : MonoBehaviour
                         GameObject bus = Instantiate(busPrefab);
 
                         bus.transform.position = position;
+                        bus.transform.eulerAngles = Vector3.zero + new Vector3(0, 90 + Random.Range(-maxAngleVariationMagnitude, maxAngleVariationMagnitude), 0);
 
-                        Debug.Log(busIndex + "/" + new Vector2(xIndex, yIndex) + "/" + new Vector2(xIndex + 2, yIndex));
+                        if (direction == Direction.Left)
+                        {
+                            bus.transform.eulerAngles += new Vector3(0, 180, 0);
+                        }
 
                         busIndex++;
                     }
                 }
                 else
                 {
+                    bool isValid = IsValidVerticleAreaForBus(yIndex, yIndex + 2, xIndex);
 
+                    if (isValid)
+                    {
+                        for (int j = yIndex + 1; j <= yIndex + 2; j++)
+                        {
+                            isTilesChecked[xIndex + j * areaColumn] = true;
+                        }
+
+                        Vector3 position = new Vector3();
+
+                        position.x = xIndex * tileSize;
+                        position.z = (yIndex + 1) * tileSize;
+
+                        GameObject bus = Instantiate(busPrefab);
+
+                        bus.transform.position = position;
+                        bus.transform.eulerAngles = Vector3.zero + new Vector3(0, Random.Range(-maxAngleVariationMagnitude, maxAngleVariationMagnitude), 0);
+
+                        if (direction == Direction.Down)
+                        {
+                            bus.transform.eulerAngles += new Vector3(0, 180, 0);
+                        }
+
+                        busIndex++;
+                    }
                 }
 
                 isTilesChecked[i] = true;
             }
         }
+    }
+
+    private bool IsValidVerticleAreaForBus(int startYIndex, int endYIndex, int xIndex)
+    {
+        bool isValid = true;
+
+        for (int j = startYIndex; j <= endYIndex; j++)
+        {
+            if (isTilesChecked[xIndex + j * areaColumn])
+            {
+                isValid = false;
+
+                break;
+            }
+
+            // if (j > areaColumn)
+            // {
+            //     isValid = false;
+
+            //     break;
+            // }
+            // else
+            // {
+            //     if (isTilesChecked[j + yIndex * areaColumn])
+            //     {
+            //         isValid = false;
+
+            //         break;
+            //     }
+            // }
+        }
+
+        return isValid;
     }
 }
