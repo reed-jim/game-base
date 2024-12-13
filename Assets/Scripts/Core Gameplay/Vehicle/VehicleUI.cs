@@ -28,7 +28,7 @@ public class VehicleUI : MonoBehaviour
                 seatLeftText.gameObject.SetActive(true);
             }
 
-            seatLeftText.text = $"{vehicleServiceLocator.Vehicle.NumberSeatFilled}/{vehicleServiceLocator.Vehicle.NumberSeat}";
+            seatLeftText.text = $"{vehicleServiceLocator.Vehicle.ConfirmedNumberSeatFilled}/{vehicleServiceLocator.Vehicle.NumberSeat}";
         }
     }
 }

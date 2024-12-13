@@ -98,7 +98,9 @@ public class Bus : BaseVehicle
 
     public override void GetInVehicle()
     {
-        if (_numberSeatFilled == numberSeat)
+        _confirmedNumberSeatFilled++;
+
+        if (_confirmedNumberSeatFilled == numberSeat)
         {
             MoveOut();
         }

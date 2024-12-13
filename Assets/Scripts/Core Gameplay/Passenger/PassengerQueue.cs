@@ -32,6 +32,7 @@ public class PassengerQueue : MonoBehaviour
     public static event Action<int, GameFaction> setPassengerFactionEvent;
     public static event Action<GameFaction> noPassengerLeftForFactionEvent;
     public static event Action<int, CharacterAnimationState> changeAnimationEvent;
+    public static event Action<int> updatePassengerLeftEvent;
     #endregion
 
     private void Awake()
@@ -59,7 +60,10 @@ public class PassengerQueue : MonoBehaviour
 
     private async void DelayInit()
     {
-        await Task.Delay(1000);
+        while (_passengerFactionPool.Count == 0)
+        {
+            await Task.Delay(200);
+        }
 
         SpawnPassengers();
 
@@ -172,10 +176,10 @@ public class PassengerQueue : MonoBehaviour
 
                     changeAnimationEvent?.Invoke(passenger.gameObject.GetInstanceID(), CharacterAnimationState.Idle);
 
-                    if (passenger.CurrentPathPercent == 1)
-                    {
-                        OnVehicleArrivedParkingSlot();
-                    }
+                    // if (passenger.CurrentPathPercent == 1)
+                    // {
+                    //     OnVehicleArrivedParkingSlot();
+                    // }
                 });
 
                 _tweens.Add(tween);
@@ -216,10 +220,22 @@ public class PassengerQueue : MonoBehaviour
 
                     IsFound = true;
 
-                    await Task.Delay(250);
+                    await Task.Delay(80);
 
                     break;
                 }
+
+                // if (faction == passenger.GetFaction())
+                // {
+                //     _passengers.Dequeue().GetInVehicle(vehicle);
+                //     vehicle.FillSeat();
+
+                //     IsFound = true;
+
+                //     await Task.Delay(500);
+
+                //     break;
+                // }
             }
 
             if (!IsFound)
@@ -241,6 +257,8 @@ public class PassengerQueue : MonoBehaviour
         {
             _passengerFactionPool.Add(faction);
             _remainingPassengersFaction.Add(faction);
+
+            updatePassengerLeftEvent?.Invoke(_remainingPassengersFaction.Count);
         }
     }
 
@@ -265,6 +283,11 @@ public class PassengerQueue : MonoBehaviour
         {
             noPassengerLeftForFactionEvent?.Invoke(faction);
         }
+
+        updatePassengerLeftEvent?.Invoke(_remainingPassengersFaction.Count);
+
+
+
 
 
 

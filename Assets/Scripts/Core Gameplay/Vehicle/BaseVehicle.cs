@@ -12,6 +12,7 @@ public abstract class BaseVehicle : MonoBehaviour
 
     #region PRIVATE FIELD
     protected int _numberSeatFilled;
+    protected int _confirmedNumberSeatFilled;
     protected bool _isParked;
     #endregion
 
@@ -28,6 +29,12 @@ public abstract class BaseVehicle : MonoBehaviour
     {
         get => _numberSeatFilled;
         set => _numberSeatFilled = value;
+    }
+
+    public int ConfirmedNumberSeatFilled
+    {
+        get => _confirmedNumberSeatFilled;
+        set => _confirmedNumberSeatFilled = value;
     }
 
     public bool IsParked
