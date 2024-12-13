@@ -6,7 +6,7 @@ public class VehicleFaction : MonoBehaviour
 {
     [SerializeField] private CharacterMaterialPropertyBlock characterMaterialPropertyBlock;
 
-    private GameFaction _faction;
+    [SerializeField] private GameFaction _faction;
 
     public GameFaction Faction
     {
@@ -16,6 +16,11 @@ public class VehicleFaction : MonoBehaviour
     public static event Action<GameFaction> vehicleFactionSetEvent;
 
     private void Start()
+    {
+        SetFaction(_faction);
+    }
+
+    public void SetRandomFaction()
     {
         SetFaction((GameFaction)UnityEngine.Random.Range(0, 4));
     }

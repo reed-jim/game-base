@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class ParkingSlotManager : MonoBehaviour
@@ -7,10 +9,26 @@ public class ParkingSlotManager : MonoBehaviour
     private ParkingSlot _emptyParkingSlot;
     #endregion
 
+    #region ACTION
+    public static event Action<ParkingSlotManager> bindParkingSlotManagerEvent;
+    #endregion
+
     public ParkingSlot[] ParkingSlots
     {
         get => _parkingSlots;
         set => _parkingSlots = value;
+    }
+
+    private void Awake()
+    {
+        DelayBindParkingSlotManager();
+    }
+
+    private async void DelayBindParkingSlotManager()
+    {
+        await Task.Delay(2000);
+
+        bindParkingSlotManagerEvent?.Invoke(this);
     }
 
     public ParkingSlot GetEmptyParkingSlot()

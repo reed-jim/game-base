@@ -53,6 +53,8 @@ public class PassengerQueue : MonoBehaviour
 
         SpawnPassengers();
 
+        await Task.Delay(2000);
+
         MoveToPosititon();
     }
 
@@ -90,7 +92,7 @@ public class PassengerQueue : MonoBehaviour
 
             changeAnimationEvent?.Invoke(passenger.gameObject.GetInstanceID(), CharacterAnimationState.Walking);
 
-            Tween.Custom(0, 1 - 0.05f * i, duration: 1 + 2 / (1 - 0.05f * i), onValueChange: newVal =>
+            Tween.Custom(0, 1 - 0.05f * i, duration: 1 + 2 / (1 - 0.05f * i), ease: Ease.Linear, onValueChange: newVal =>
             {
                 passenger.PathFollower.SetPercent(newVal);
             })

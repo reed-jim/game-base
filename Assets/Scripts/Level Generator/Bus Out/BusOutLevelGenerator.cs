@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -21,11 +22,6 @@ public class BusOutLevelGeneratorEditor : EditorWindow
     public static void ShowWindow()
     {
         GetWindow<BusOutLevelGeneratorEditor>("Bus Out Level Generator");
-    }
-
-    private void OnEnable()
-    {
-        isTilesChecked = new bool[areaRow * areaColumn];
     }
 
     private void OnGUI()
@@ -55,6 +51,8 @@ public class BusOutLevelGeneratorEditor : EditorWindow
         {
             Transform busContainer = Instantiate(busContainerPrefab, levelPrefab.transform).transform;
 
+            busContainer.name = "Bus Container";
+
             Generate(busContainer);
 
             EditorUtility.SetDirty(levelPrefab);
@@ -70,6 +68,8 @@ public class BusOutLevelGeneratorEditor : EditorWindow
     private void Generate(Transform busContainer)
     {
         int busIndex = 0;
+
+        isTilesChecked = new bool[areaRow * areaColumn];
 
         for (int i = 0; i < isTilesChecked.Length; i++)
         {
@@ -117,6 +117,8 @@ public class BusOutLevelGeneratorEditor : EditorWindow
 
                         GameObject bus = Instantiate(busPrefab, busContainer);
 
+                        bus.name = $"Bus {busIndex}";
+
                         bus.transform.position = position;
                         bus.transform.eulerAngles = Vector3.zero + new Vector3(0, 90 + Random.Range(-maxAngleVariationMagnitude, maxAngleVariationMagnitude), 0);
 
@@ -124,6 +126,8 @@ public class BusOutLevelGeneratorEditor : EditorWindow
                         {
                             bus.transform.eulerAngles += new Vector3(0, 180, 0);
                         }
+
+                        bus.GetComponent<VehicleFaction>().SetRandomFaction();
 
                         busIndex++;
                     }
@@ -146,6 +150,8 @@ public class BusOutLevelGeneratorEditor : EditorWindow
 
                         GameObject bus = Instantiate(busPrefab, busContainer);
 
+                        bus.name = $"Bus {busIndex}";
+
                         bus.transform.position = position;
                         bus.transform.eulerAngles = Vector3.zero + new Vector3(0, Random.Range(-maxAngleVariationMagnitude, maxAngleVariationMagnitude), 0);
 
@@ -153,6 +159,8 @@ public class BusOutLevelGeneratorEditor : EditorWindow
                         {
                             bus.transform.eulerAngles += new Vector3(0, 180, 0);
                         }
+
+                        bus.GetComponent<VehicleFaction>().SetRandomFaction();
 
                         busIndex++;
                     }
@@ -169,13 +177,6 @@ public class BusOutLevelGeneratorEditor : EditorWindow
 
         for (int j = startYIndex; j <= endYIndex; j++)
         {
-            // if (isTilesChecked[xIndex + j * areaColumn])
-            // {
-            //     isValid = false;
-
-            //     break;
-            // }
-
             if (j >= areaRow)
             {
                 isValid = false;
@@ -196,3 +197,4 @@ public class BusOutLevelGeneratorEditor : EditorWindow
         return isValid;
     }
 }
+#endif

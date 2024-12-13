@@ -6,11 +6,10 @@ using static GameEnum;
 
 public class Bus : BaseVehicle
 {
-    [SerializeField] private ParkingSlotManager parkingSlotManager;
-
     [SerializeField] private VehicleFaction vehicleFaction;
 
     #region PRIVATE FIELD
+    private ParkingSlotManager _parkingSlotManager;
     private ParkingSlot _parkingSlot;
     #endregion
 
@@ -21,6 +20,18 @@ public class Bus : BaseVehicle
     private void Awake()
     {
         PassengerQueue.noPassengerLeftForFactionEvent += MoveOut;
+        ParkingSlotManager.bindParkingSlotManagerEvent += BindParkingSlotManager;
+    }
+
+    private void OnDestroy()
+    {
+        PassengerQueue.noPassengerLeftForFactionEvent -= MoveOut;
+        ParkingSlotManager.bindParkingSlotManagerEvent -= BindParkingSlotManager;
+    }
+
+    private void BindParkingSlotManager(ParkingSlotManager parkingSlotManager)
+    {
+        _parkingSlotManager = parkingSlotManager;
     }
 
     public override GameFaction GetVehicleFaction()
@@ -30,11 +41,11 @@ public class Bus : BaseVehicle
 
     public override void Park()
     {
-        ParkingSlot emptyParkingSlot = parkingSlotManager.GetEmptyParkingSlot();
+        ParkingSlot emptyParkingSlot = _parkingSlotManager.GetEmptyParkingSlot();
 
         if (emptyParkingSlot != null)
         {
-            parkingSlotManager.ParkVehicle(this);
+            _parkingSlotManager.ParkVehicle(this);
 
             navMeshAgent.destination = emptyParkingSlot.transform.position;
 
@@ -42,11 +53,6 @@ public class Bus : BaseVehicle
 
             StartCoroutine(CheckingReachingParkingSlot());
         }
-    }
-
-    private void OnDestroy()
-    {
-        PassengerQueue.noPassengerLeftForFactionEvent -= MoveOut;
     }
 
     private IEnumerator CheckingReachingParkingSlot()

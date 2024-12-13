@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4076487339181658116}
-  - component: {fileID: 6289197455861518815}
   - component: {fileID: 3278904741721920135}
-  - component: {fileID: 4117505507295997538}
   - component: {fileID: 2783442924619759918}
+  - component: {fileID: 4117505507295997538}
+  - component: {fileID: 6289197455861518815}
   m_Layer: 0
   m_Name: Bus
   m_TagString: Untagged
@@ -36,6 +36,47 @@ Transform:
   - {fileID: 2176344728555917801}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &3278904741721920135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4154754116511692263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48e8ef9b5bb56914cbc9e28c51eeb6ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  navMeshAgent: {fileID: 6289197455861518815}
+  vehicleFaction: {fileID: 2783442924619759918}
+--- !u!114 &2783442924619759918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4154754116511692263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4da2802f271a84a49b926674293a4656, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterMaterialPropertyBlock: {fileID: 4117505507295997538}
+--- !u!114 &4117505507295997538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4154754116511692263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 713f0ef3afae60445aa3f4365ae02c59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colorReference: _BaseColor
+  _renderer: {fileID: 4631452478540119629}
 --- !u!195 &6289197455861518815
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -58,48 +99,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
---- !u!114 &3278904741721920135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4154754116511692263}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48e8ef9b5bb56914cbc9e28c51eeb6ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  navMeshAgent: {fileID: 6289197455861518815}
-  parkingSlotManager: {fileID: 0}
-  vehicleFaction: {fileID: 2783442924619759918}
---- !u!114 &4117505507295997538
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4154754116511692263}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 713f0ef3afae60445aa3f4365ae02c59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  colorReference: _BaseColor
-  _renderer: {fileID: 4631452478540119629}
---- !u!114 &2783442924619759918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4154754116511692263}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4da2802f271a84a49b926674293a4656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterMaterialPropertyBlock: {fileID: 4117505507295997538}
 --- !u!1001 &1853605641258792450
 PrefabInstance:
   m_ObjectHideFlags: 0
