@@ -7,7 +7,7 @@ public class PassengerCollider : MonoBehaviour
     [SerializeField] private PassengerFaction passengerFaction;
 
     #region ACTION
-    public static event Action<BaseVehicle> passengerGotInVehicleEvent;
+    public static event Action<Passenger, BaseVehicle> passengerGotInVehicleEvent;
     #endregion
 
     private void OnTriggerEnter(Collider other)
@@ -20,7 +20,9 @@ public class PassengerCollider : MonoBehaviour
             {
                 gameObject.SetActive(false);
 
-                passengerGotInVehicleEvent?.Invoke(vehicle);
+                vehicle.GetInVehicle();
+
+                passengerGotInVehicleEvent?.Invoke(gameObject.GetComponent<Passenger>(), vehicle);
             }
         }
     }

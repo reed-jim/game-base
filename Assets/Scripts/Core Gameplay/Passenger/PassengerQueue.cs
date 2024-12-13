@@ -26,6 +26,8 @@ public class PassengerQueue : MonoBehaviour
 
     [SerializeField] private int maxPassenger;
 
+    private List<Tween> _tweens;
+
     #region ACTION
     public static event Action<int, GameFaction> setPassengerFactionEvent;
     public static event Action<GameFaction> noPassengerLeftForFactionEvent;
@@ -42,6 +44,8 @@ public class PassengerQueue : MonoBehaviour
         _passengers = new Queue<Passenger>();
         _passengerFactionPool = new List<GameFaction>();
         _remainingPassengersFaction = new List<GameFaction>();
+
+        _tweens = new List<Tween>();
 
         DelayInit();
     }
@@ -96,6 +100,16 @@ public class PassengerQueue : MonoBehaviour
     {
         Passenger[] passengersArray = _passengers.ToArray();
 
+        float distancePercentBetweenTwoPassenger = 1f / maxPassenger;
+
+        foreach (var item in _tweens)
+        {
+            if (item.isAlive)
+            {
+                item.Stop();
+            }
+        }
+
         for (int i = 0; i < passengersArray.Length; i++)
         {
             int index = i;
@@ -106,16 +120,68 @@ public class PassengerQueue : MonoBehaviour
 
             float time = 0.3f + (2 + 0.2f * index) * (1 - passenger.CurrentPathPercent);
 
-            Tween.Custom(passenger.CurrentPathPercent, 1 - 0.05f * index, duration: time, ease: Ease.Linear, onValueChange: newVal =>
+            time = Mathf.Min(time, 3);
+
+            Tween tween = Tween.Custom(passenger.CurrentPathPercent, 1 - distancePercentBetweenTwoPassenger * index, duration: time, ease: Ease.Linear, onValueChange: newVal =>
             {
                 passenger.PathFollower.SetPercent(newVal);
+
+                passenger.CurrentPathPercent = newVal;
             })
             .OnComplete(() =>
             {
-                passenger.CurrentPathPercent = 1 - 0.05f * index;
-
                 changeAnimationEvent?.Invoke(passenger.gameObject.GetInstanceID(), CharacterAnimationState.Idle);
+
+                if (passenger.CurrentPathPercent == 1)
+                {
+                    OnVehicleArrivedParkingSlot();
+                }
             });
+
+            _tweens.Add(tween);
+        }
+    }
+
+    private void MoveInQueue(Passenger passenger)
+    {
+        Passenger[] passengersArray = _passengers.ToArray();
+
+        float distancePercentBetweenTwoPassenger = 1f / maxPassenger;
+
+        for (int i = 0; i < passengersArray.Length; i++)
+        {
+            int index = i;
+
+            if (passenger == passengersArray[i])
+            {
+                changeAnimationEvent?.Invoke(passenger.gameObject.GetInstanceID(), CharacterAnimationState.Walking);
+
+                float time = 0.3f + (2 + 0.2f * index) * (1 - passenger.CurrentPathPercent);
+
+                time = Mathf.Min(time, 3);
+
+                Tween tween = Tween.Custom(passenger.CurrentPathPercent, 1 - distancePercentBetweenTwoPassenger * index, duration: time, ease: Ease.Linear, onValueChange: newVal =>
+                {
+                    passenger.PathFollower.SetPercent(newVal);
+
+                    passenger.CurrentPathPercent = newVal;
+                })
+                .OnComplete(() =>
+                {
+                    passenger.CurrentPathPercent = 1 - distancePercentBetweenTwoPassenger * index;
+
+                    changeAnimationEvent?.Invoke(passenger.gameObject.GetInstanceID(), CharacterAnimationState.Idle);
+
+                    if (passenger.CurrentPathPercent == 1)
+                    {
+                        OnVehicleArrivedParkingSlot();
+                    }
+                });
+
+                _tweens.Add(tween);
+
+                break;
+            }
         }
     }
 
@@ -127,20 +193,30 @@ public class PassengerQueue : MonoBehaviour
 
             foreach (var parkingSlot in parkingSlotManager.ParkingSlots)
             {
-                if (parkingSlot.ParkedVehicle == null)
+                BaseVehicle vehicle = parkingSlot.ParkedVehicle;
+
+                if (vehicle == null)
                 {
                     continue;
                 }
 
-                GameFaction faction = parkingSlot.ParkedVehicle.GetVehicleFaction();
-
-                if (faction == _passengers.Peek().GetFaction())
+                if (vehicle.IsFull())
                 {
-                    _passengers.Dequeue().GetInVehicle(parkingSlot.ParkedVehicle);
+                    continue;
+                }
+
+                GameFaction faction = vehicle.GetVehicleFaction();
+
+                Passenger passenger = _passengers.Peek();
+
+                if (faction == passenger.GetFaction() && passenger.CurrentPathPercent == 1)
+                {
+                    _passengers.Dequeue().GetInVehicle(vehicle);
+                    vehicle.FillSeat();
 
                     IsFound = true;
 
-                    await Task.Delay(300);
+                    await Task.Delay(250);
 
                     break;
                 }
@@ -152,8 +228,59 @@ public class PassengerQueue : MonoBehaviour
 
                 break;
             }
+
+            RespawnPassenger();
+
+            MoveToPosititon();
+        }
+    }
+
+    private void AddPassengerFactionPool(GameFaction faction, int numberSeat)
+    {
+        for (int i = 0; i < numberSeat; i++)
+        {
+            _passengerFactionPool.Add(faction);
+            _remainingPassengersFaction.Add(faction);
+        }
+    }
+
+    private GameFaction GetPassengerFactionFromPool()
+    {
+        int index = UnityEngine.Random.Range(0, _passengerFactionPool.Count);
+
+        GameFaction faction = _passengerFactionPool[index];
+
+        _passengerFactionPool.RemoveAt(index);
+
+        return faction;
+    }
+
+    private void OnPassengerGotInVehicle(Passenger passenger, BaseVehicle vehicle)
+    {
+        GameFaction faction = vehicle.GetVehicleFaction();
+
+        _remainingPassengersFaction.Remove(faction);
+
+        if (!_remainingPassengersFaction.Contains(faction))
+        {
+            noPassengerLeftForFactionEvent?.Invoke(faction);
         }
 
+
+
+        _passengers.Enqueue(passenger);
+
+        passenger.gameObject.SetActive(true);
+
+        passenger.Reset();
+
+
+        MoveInQueue(passenger);
+    }
+
+    #region POOLING
+    private void RespawnPassenger()
+    {
         while (_passengerFactionPool.Count > 0)
         {
             bool isPassengerAvailable = false;
@@ -181,39 +308,6 @@ public class PassengerQueue : MonoBehaviour
                 break;
             }
         }
-
-        MoveToPosititon();
     }
-
-    private void AddPassengerFactionPool(GameFaction faction, int numberSeat)
-    {
-        for (int i = 0; i < numberSeat; i++)
-        {
-            _passengerFactionPool.Add(faction);
-            _remainingPassengersFaction.Add(faction);
-        }
-    }
-
-    private GameFaction GetPassengerFactionFromPool()
-    {
-        int index = UnityEngine.Random.Range(0, _passengerFactionPool.Count);
-
-        GameFaction faction = _passengerFactionPool[index];
-
-        _passengerFactionPool.RemoveAt(index);
-
-        return faction;
-    }
-
-    private void OnPassengerGotInVehicle(BaseVehicle vehicle)
-    {
-        GameFaction faction = vehicle.GetVehicleFaction();
-
-        _remainingPassengersFaction.Remove(faction);
-
-        if (!_remainingPassengersFaction.Contains(faction))
-        {
-            noPassengerLeftForFactionEvent?.Invoke(faction);
-        }
-    }
+    #endregion
 }

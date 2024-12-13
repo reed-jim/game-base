@@ -21,8 +21,6 @@ public class Bus : BaseVehicle
     {
         PassengerQueue.noPassengerLeftForFactionEvent += MoveOut;
         ParkingSlotManager.bindParkingSlotManagerEvent += BindParkingSlotManager;
-
-        _numberSeatLeft = numberSeat;
     }
 
     private void OnDestroy()
@@ -78,13 +76,33 @@ public class Bus : BaseVehicle
         _isParked = true;
     }
 
+    private void MoveOut()
+    {
+        navMeshAgent.destination = transform.position + new Vector3(50, 0, -20);
+
+        vehicleLeftParkingSlotEvent?.Invoke(this);
+    }
+
     private void MoveOut(GameFaction faction)
     {
         if (faction == GetVehicleFaction())
         {
-            navMeshAgent.destination = transform.position + new Vector3(50, 0, 0);
-
-            vehicleLeftParkingSlotEvent?.Invoke(this);
+            MoveOut();
         }
+    }
+
+    public override void FillSeat()
+    {
+        _numberSeatFilled++;
+    }
+
+    public override void GetInVehicle()
+    {
+        if (_numberSeatFilled == numberSeat)
+        {
+            MoveOut();
+        }
+
+        InvokeGetInVehicleEvent();
     }
 }
