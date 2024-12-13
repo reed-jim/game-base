@@ -64,7 +64,7 @@ public class PassengerQueue : MonoBehaviour
         {
             GameObject passenger = Instantiate(passengerPrefab, container);
 
-            passenger.transform.position = new Vector3(6, 0, 50 + 2 * i);
+            passenger.transform.position = new Vector3(0, 0, 100 + 5 * i);
 
             Passenger passengerComponent = passenger.GetComponent<Passenger>();
 
