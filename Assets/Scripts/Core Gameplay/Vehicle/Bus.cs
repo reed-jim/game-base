@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using PrimeTween;
 using UnityEngine;
 using static GameEnum;
 
@@ -8,6 +9,10 @@ public class Bus : BaseVehicle
     [SerializeField] private ParkingSlotManager parkingSlotManager;
 
     [SerializeField] private VehicleFaction vehicleFaction;
+
+    #region PRIVATE FIELD
+    private ParkingSlot _parkingSlot;
+    #endregion
 
     #region ACTION
     public static event Action<BaseVehicle> vehicleLeftParkingSlotEvent;
@@ -33,6 +38,8 @@ public class Bus : BaseVehicle
 
             navMeshAgent.destination = emptyParkingSlot.transform.position;
 
+            _parkingSlot = emptyParkingSlot;
+
             StartCoroutine(CheckingReachingParkingSlot());
         }
     }
@@ -52,6 +59,11 @@ public class Bus : BaseVehicle
         {
             yield return waitForSeconds;
         }
+
+        Tween.Custom(transform.eulerAngles.y, _parkingSlot.transform.eulerAngles.y, duration: 0.5f, onValueChange: newVal =>
+        {
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, newVal, transform.eulerAngles.z);
+        });
 
         InvokeVehicleReachParkingSlotEvent();
     }

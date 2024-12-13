@@ -25,12 +25,14 @@ public class PassengerQueue : MonoBehaviour
     #region ACTION
     public static event Action<int, GameFaction> setPassengerFactionEvent;
     public static event Action<GameFaction> noPassengerLeftForFactionEvent;
+    public static event Action<int, CharacterAnimationState> changeAnimationEvent;
     #endregion
 
     private void Awake()
     {
         BaseVehicle.vehicleReachParkingSlotEvent += OnVehicleArrivedParkingSlot;
         VehicleFaction.vehicleFactionSetEvent += AddPassengerFactionPool;
+        PassengerCollider.passengerGotInVehicleEvent += OnPassengerGotInVehicle;
 
         _passengers = new Queue<Passenger>();
         _passengerFactionPool = new List<GameFaction>();
@@ -42,6 +44,7 @@ public class PassengerQueue : MonoBehaviour
     {
         BaseVehicle.vehicleReachParkingSlotEvent -= OnVehicleArrivedParkingSlot;
         VehicleFaction.vehicleFactionSetEvent -= AddPassengerFactionPool;
+        PassengerCollider.passengerGotInVehicleEvent -= OnPassengerGotInVehicle;
     }
 
     private async void DelayInit()
@@ -85,6 +88,8 @@ public class PassengerQueue : MonoBehaviour
 
             passenger.PathFollower.follow = true;
 
+            changeAnimationEvent?.Invoke(passenger.gameObject.GetInstanceID(), CharacterAnimationState.Walking);
+
             Tween.Custom(0, 1 - 0.05f * i, duration: 1 + 2 / (1 - 0.05f * i), onValueChange: newVal =>
             {
                 passenger.PathFollower.SetPercent(newVal);
@@ -92,6 +97,8 @@ public class PassengerQueue : MonoBehaviour
             .OnComplete(() =>
             {
                 passenger.PathFollower.follow = false;
+
+                changeAnimationEvent?.Invoke(passenger.gameObject.GetInstanceID(), CharacterAnimationState.Idle);
             });
         }
     }
@@ -105,13 +112,6 @@ public class PassengerQueue : MonoBehaviour
             if (faction == _passengers.Peek().GetFaction())
             {
                 _passengers.Dequeue().GetInVehicle(vehicle);
-
-                _remainingPassengersFaction.Remove(faction);
-
-                if (!_remainingPassengersFaction.Contains(faction))
-                {
-                    noPassengerLeftForFactionEvent?.Invoke(faction);
-                }
 
                 await Task.Delay(300);
             }
@@ -138,5 +138,17 @@ public class PassengerQueue : MonoBehaviour
         _passengerFactionPool.RemoveAt(index);
 
         return faction;
+    }
+
+    private void OnPassengerGotInVehicle(BaseVehicle vehicle)
+    {
+        GameFaction faction = vehicle.GetVehicleFaction();
+
+        _remainingPassengersFaction.Remove(faction);
+
+        if (!_remainingPassengersFaction.Contains(faction))
+        {
+            noPassengerLeftForFactionEvent?.Invoke(faction);
+        }
     }
 }

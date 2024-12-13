@@ -15,4 +15,9 @@ public class GameEnum : MonoBehaviour
         Purple,
         Orange
     }
+
+    public enum CharacterAnimationState {
+        Idle = 0,
+        Walking = 1
+    }
 }

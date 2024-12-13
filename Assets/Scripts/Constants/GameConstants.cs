@@ -29,4 +29,8 @@ public static class GameConstants
     #region OBJECT POOLING
     public static string TAG_SOUND = "Tag Sound";
     #endregion
+
+    #region ANIMATION
+    public static string ANIMATION_STATE = "AnimationState";
+    #endregion
 }

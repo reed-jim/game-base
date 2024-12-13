@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Dreamteck.Splines;
 using UnityEngine;
@@ -10,6 +11,10 @@ public class Passenger : MonoBehaviour
 
     [SerializeField] private NavMeshAgent navMeshAgent;
     [SerializeField] private SplineFollower pathFollower;
+
+    #region ACTION
+    public static event Action<int, CharacterAnimationState> changeAnimationEvent;
+    #endregion
 
     public NavMeshAgent NavMeshAgent
     {
@@ -49,5 +54,7 @@ public class Passenger : MonoBehaviour
         navMeshAgent.isStopped = false;
 
         navMeshAgent.destination = vehicle.transform.position;
+
+        changeAnimationEvent?.Invoke(gameObject.GetInstanceID(), CharacterAnimationState.Walking);
     }
 }
