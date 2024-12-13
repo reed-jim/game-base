@@ -4,6 +4,7 @@ using static GameEnum;
 
 public class VehicleFaction : MonoBehaviour
 {
+    [SerializeField] private VehicleServiceLocator vehicleServiceLocator;
     [SerializeField] private CharacterMaterialPropertyBlock characterMaterialPropertyBlock;
 
     [SerializeField] private GameFaction _faction;
@@ -13,7 +14,7 @@ public class VehicleFaction : MonoBehaviour
         get => _faction;
     }
 
-    public static event Action<GameFaction> vehicleFactionSetEvent;
+    public static event Action<GameFaction, int> vehicleFactionSetEvent;
 
     private void Start()
     {
@@ -50,6 +51,6 @@ public class VehicleFaction : MonoBehaviour
 
         _faction = faction;
 
-        vehicleFactionSetEvent?.Invoke(faction);
+        vehicleFactionSetEvent?.Invoke(faction, vehicleServiceLocator.Vehicle.NumberSeat);
     }
 }

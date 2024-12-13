@@ -1182,6 +1182,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   passengerPrefab: {fileID: 2226728520157033699, guid: 72429ff572097e34b892b0f7ab1c4443, type: 3}
   container: {fileID: 633996576}
+  parkingSlotManager: {fileID: 1639088072}
   pathSpline: {fileID: 47493435}
   maxPassenger: 20
 --- !u!1 &633996574

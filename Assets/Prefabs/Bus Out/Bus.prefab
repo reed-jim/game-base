@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4076487339181658116}
+  - component: {fileID: 1299184410281490317}
   - component: {fileID: 3278904741721920135}
   - component: {fileID: 2783442924619759918}
   - component: {fileID: 4117505507295997538}
@@ -36,6 +37,19 @@ Transform:
   - {fileID: 2176344728555917801}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &1299184410281490317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4154754116511692263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5d80691747fd8945ae2c8b45afc21be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vehicle: {fileID: 3278904741721920135}
 --- !u!114 &3278904741721920135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -49,6 +63,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   navMeshAgent: {fileID: 6289197455861518815}
+  numberSeat: 10
   vehicleFaction: {fileID: 2783442924619759918}
 --- !u!114 &2783442924619759918
 MonoBehaviour:
@@ -62,7 +77,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4da2802f271a84a49b926674293a4656, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vehicleServiceLocator: {fileID: 1299184410281490317}
   characterMaterialPropertyBlock: {fileID: 4117505507295997538}
+  _faction: 0
 --- !u!114 &4117505507295997538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,7 +104,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 20
+  m_Speed: 30
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120

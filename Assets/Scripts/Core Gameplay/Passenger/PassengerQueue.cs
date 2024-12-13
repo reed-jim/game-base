@@ -11,6 +11,10 @@ public class PassengerQueue : MonoBehaviour
     [SerializeField] private GameObject passengerPrefab;
     [SerializeField] private Transform container;
 
+    [Header("COUPLING")]
+    [SerializeField] private ParkingSlotManager parkingSlotManager;
+
+    private Passenger[] _passengerPool;
     private Queue<Passenger> _passengers;
 
     [Header("VEHICLE")]
@@ -34,8 +38,10 @@ public class PassengerQueue : MonoBehaviour
         VehicleFaction.vehicleFactionSetEvent += AddPassengerFactionPool;
         PassengerCollider.passengerGotInVehicleEvent += OnPassengerGotInVehicle;
 
+        _passengerPool = new Passenger[maxPassenger];
         _passengers = new Queue<Passenger>();
         _passengerFactionPool = new List<GameFaction>();
+        _remainingPassengersFaction = new List<GameFaction>();
 
         DelayInit();
     }
@@ -60,11 +66,16 @@ public class PassengerQueue : MonoBehaviour
 
     private void SpawnPassengers()
     {
-        int poolPassengerSize = _passengerFactionPool.Count < maxPassenger ? _passengerFactionPool.Count : maxPassenger;
-
-        for (int i = 0; i < poolPassengerSize; i++)
+        for (int i = 0; i < maxPassenger; i++)
         {
+            if (i >= _passengerFactionPool.Count)
+            {
+                return;
+            }
+
             GameObject passenger = Instantiate(passengerPrefab, container);
+
+            passenger.name = $"Passenger {i}";
 
             passenger.transform.position = new Vector3(0, 0, 100 + 5 * i);
 
@@ -74,7 +85,10 @@ public class PassengerQueue : MonoBehaviour
 
             setPassengerFactionEvent?.Invoke(passenger.GetInstanceID(), GetPassengerFactionFromPool());
 
+            _passengerPool[i] = passengerComponent;
             _passengers.Enqueue(passengerComponent);
+
+            // passenger.gameObject.SetActive(false);
         }
     }
 
@@ -88,47 +102,96 @@ public class PassengerQueue : MonoBehaviour
 
             Passenger passenger = passengersArray[i];
 
-            passenger.PathFollower.follow = true;
-
             changeAnimationEvent?.Invoke(passenger.gameObject.GetInstanceID(), CharacterAnimationState.Walking);
 
-            Tween.Custom(0, 1 - 0.05f * i, duration: 1 + 2 / (1 - 0.05f * i), ease: Ease.Linear, onValueChange: newVal =>
+            float time = 0.3f + (2 + 0.2f * index) * (1 - passenger.CurrentPathPercent);
+
+            Tween.Custom(passenger.CurrentPathPercent, 1 - 0.05f * index, duration: time, ease: Ease.Linear, onValueChange: newVal =>
             {
                 passenger.PathFollower.SetPercent(newVal);
             })
             .OnComplete(() =>
             {
-                passenger.PathFollower.follow = false;
+                passenger.CurrentPathPercent = 1 - 0.05f * index;
 
                 changeAnimationEvent?.Invoke(passenger.gameObject.GetInstanceID(), CharacterAnimationState.Idle);
             });
         }
     }
 
-    private async void OnVehicleArrivedParkingSlot(BaseVehicle vehicle)
+    private async void OnVehicleArrivedParkingSlot()
     {
         while (_passengers.Count > 0)
         {
-            GameFaction faction = vehicle.GetVehicleFaction();
+            bool IsFound = false;
 
-            if (faction == _passengers.Peek().GetFaction())
+            foreach (var parkingSlot in parkingSlotManager.ParkingSlots)
             {
-                _passengers.Dequeue().GetInVehicle(vehicle);
+                if (parkingSlot.ParkedVehicle == null)
+                {
+                    continue;
+                }
 
-                await Task.Delay(300);
+                GameFaction faction = parkingSlot.ParkedVehicle.GetVehicleFaction();
+
+                if (faction == _passengers.Peek().GetFaction())
+                {
+                    _passengers.Dequeue().GetInVehicle(parkingSlot.ParkedVehicle);
+
+                    IsFound = true;
+
+                    await Task.Delay(300);
+
+                    break;
+                }
             }
-            else
+
+            if (!IsFound)
+            {
+                // MoveToPosititon();
+
+                break;
+            }
+        }
+
+        while (_passengerFactionPool.Count > 0)
+        {
+            bool isPassengerAvailable = false;
+
+            for (int i = 0; i < _passengerPool.Length; i++)
+            {
+                if (!_passengerPool[i].gameObject.activeSelf)
+                {
+                    setPassengerFactionEvent?.Invoke(_passengerPool[i].gameObject.GetInstanceID(), GetPassengerFactionFromPool());
+
+                    _passengers.Enqueue(_passengerPool[i]);
+
+                    _passengerPool[i].gameObject.SetActive(true);
+
+                    _passengerPool[i].Reset();
+
+                    isPassengerAvailable = true;
+
+                    break;
+                }
+            }
+
+            if (!isPassengerAvailable)
             {
                 break;
             }
         }
+
+        MoveToPosititon();
     }
 
-    private void AddPassengerFactionPool(GameFaction faction)
+    private void AddPassengerFactionPool(GameFaction faction, int numberSeat)
     {
-        _passengerFactionPool.Add(faction);
-
-        _remainingPassengersFaction = _passengerFactionPool;
+        for (int i = 0; i < numberSeat; i++)
+        {
+            _passengerFactionPool.Add(faction);
+            _remainingPassengersFaction.Add(faction);
+        }
     }
 
     private GameFaction GetPassengerFactionFromPool()

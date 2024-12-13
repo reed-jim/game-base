@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PassengerCollider : MonoBehaviour
 {
+    [SerializeField] private PassengerFaction passengerFaction;
+
     #region ACTION
     public static event Action<BaseVehicle> passengerGotInVehicleEvent;
     #endregion
@@ -14,9 +16,12 @@ public class PassengerCollider : MonoBehaviour
 
         if (vehicle != null)
         {
-            gameObject.SetActive(false);
+            if (vehicle.GetVehicleFaction() == passengerFaction.Faction && vehicle.IsParked)
+            {
+                gameObject.SetActive(false);
 
-            passengerGotInVehicleEvent?.Invoke(vehicle);
+                passengerGotInVehicleEvent?.Invoke(vehicle);
+            }
         }
     }
 }

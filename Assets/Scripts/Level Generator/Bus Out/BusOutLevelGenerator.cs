@@ -115,7 +115,8 @@ public class BusOutLevelGeneratorEditor : EditorWindow
                         position.x = (xIndex + 1) * tileSize;
                         position.z = yIndex * tileSize;
 
-                        GameObject bus = Instantiate(busPrefab, busContainer);
+                        GameObject bus = (GameObject)PrefabUtility.InstantiatePrefab(busPrefab, busContainer);
+                        // GameObject bus = Instantiate(busPrefab, busContainer);
 
                         bus.name = $"Bus {busIndex}";
 
@@ -148,7 +149,7 @@ public class BusOutLevelGeneratorEditor : EditorWindow
                         position.x = xIndex * tileSize;
                         position.z = (yIndex + 1) * tileSize;
 
-                        GameObject bus = Instantiate(busPrefab, busContainer);
+                        GameObject bus = (GameObject)PrefabUtility.InstantiatePrefab(busPrefab, busContainer);
 
                         bus.name = $"Bus {busIndex}";
 

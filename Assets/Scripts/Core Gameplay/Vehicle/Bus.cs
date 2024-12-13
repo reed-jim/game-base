@@ -21,6 +21,8 @@ public class Bus : BaseVehicle
     {
         PassengerQueue.noPassengerLeftForFactionEvent += MoveOut;
         ParkingSlotManager.bindParkingSlotManagerEvent += BindParkingSlotManager;
+
+        _numberSeatLeft = numberSeat;
     }
 
     private void OnDestroy()
@@ -72,6 +74,8 @@ public class Bus : BaseVehicle
         });
 
         InvokeVehicleReachParkingSlotEvent();
+
+        _isParked = true;
     }
 
     private void MoveOut(GameFaction faction)
