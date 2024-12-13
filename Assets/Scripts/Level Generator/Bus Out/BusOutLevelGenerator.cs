@@ -1,12 +1,14 @@
+using UnityEditor;
 using UnityEngine;
 
-public class BusOutLevelGenerator : MonoBehaviour
+public class BusOutLevelGeneratorEditor : EditorWindow
 {
+    [SerializeField] private GameObject busContainerPrefab;
     [SerializeField] private GameObject busPrefab;
-
+    private string prefabPath = "Assets/Prefabs/MyPrefab.prefab";
 
     [Header("CUSTOMIZE")]
-    [SerializeField] private float tileSize;
+    [SerializeField] private float tileSize = 3;
     [SerializeField] private int areaRow;
     [SerializeField] private int areaColumn;
     [SerializeField] private float maxAngleVariationMagnitude;
@@ -15,14 +17,57 @@ public class BusOutLevelGenerator : MonoBehaviour
     private bool[] isTilesChecked;
     #endregion
 
-    private void Awake()
+    [MenuItem("Tools/Saferio/Bus Out/Level Generator")]
+    public static void ShowWindow()
     {
-        isTilesChecked = new bool[areaRow * areaColumn];
-
-        Generate();
+        GetWindow<BusOutLevelGeneratorEditor>("Bus Out Level Generator");
     }
 
-    private void Generate()
+    private void OnEnable()
+    {
+        isTilesChecked = new bool[areaRow * areaColumn];
+    }
+
+    private void OnGUI()
+    {
+        GUILayout.Label("Bus Level Generator", EditorStyles.boldLabel);
+
+        prefabPath = EditorGUILayout.TextField("Prefab Path", prefabPath);
+        busContainerPrefab = (GameObject)EditorGUILayout.ObjectField("Bus Container Prefab", busContainerPrefab, typeof(GameObject), false);
+        busPrefab = (GameObject)EditorGUILayout.ObjectField("Bus Prefab", busPrefab, typeof(GameObject), false);
+
+        tileSize = EditorGUILayout.FloatField("Tile Size", tileSize);
+        areaRow = EditorGUILayout.IntField("Area Rows", areaRow);
+        areaColumn = EditorGUILayout.IntField("Area Columns", areaColumn);
+        maxAngleVariationMagnitude = EditorGUILayout.FloatField("Max Angle Variation", maxAngleVariationMagnitude);
+
+        if (GUILayout.Button("Generate"))
+        {
+            ModifyPrefab(prefabPath);
+        }
+    }
+
+    private void ModifyPrefab(string path)
+    {
+        GameObject levelPrefab = PrefabUtility.LoadPrefabContents(path);
+
+        if (levelPrefab != null)
+        {
+            Transform busContainer = Instantiate(busContainerPrefab, levelPrefab.transform).transform;
+
+            Generate(busContainer);
+
+            EditorUtility.SetDirty(levelPrefab);
+
+            PrefabUtility.SaveAsPrefabAsset(levelPrefab, path);
+        }
+        else
+        {
+            Debug.LogError($"Prefab not found at path: {path}");
+        }
+    }
+
+    private void Generate(Transform busContainer)
     {
         int busIndex = 0;
 
@@ -41,7 +86,7 @@ public class BusOutLevelGenerator : MonoBehaviour
 
                     for (int j = xIndex; j <= xIndex + 2; j++)
                     {
-                        if (j > areaColumn)
+                        if (j >= areaColumn)
                         {
                             isValid = false;
 
@@ -70,7 +115,7 @@ public class BusOutLevelGenerator : MonoBehaviour
                         position.x = (xIndex + 1) * tileSize;
                         position.z = yIndex * tileSize;
 
-                        GameObject bus = Instantiate(busPrefab);
+                        GameObject bus = Instantiate(busPrefab, busContainer);
 
                         bus.transform.position = position;
                         bus.transform.eulerAngles = Vector3.zero + new Vector3(0, 90 + Random.Range(-maxAngleVariationMagnitude, maxAngleVariationMagnitude), 0);
@@ -99,7 +144,7 @@ public class BusOutLevelGenerator : MonoBehaviour
                         position.x = xIndex * tileSize;
                         position.z = (yIndex + 1) * tileSize;
 
-                        GameObject bus = Instantiate(busPrefab);
+                        GameObject bus = Instantiate(busPrefab, busContainer);
 
                         bus.transform.position = position;
                         bus.transform.eulerAngles = Vector3.zero + new Vector3(0, Random.Range(-maxAngleVariationMagnitude, maxAngleVariationMagnitude), 0);
@@ -124,28 +169,28 @@ public class BusOutLevelGenerator : MonoBehaviour
 
         for (int j = startYIndex; j <= endYIndex; j++)
         {
-            if (isTilesChecked[xIndex + j * areaColumn])
-            {
-                isValid = false;
-
-                break;
-            }
-
-            // if (j > areaColumn)
+            // if (isTilesChecked[xIndex + j * areaColumn])
             // {
             //     isValid = false;
 
             //     break;
             // }
-            // else
-            // {
-            //     if (isTilesChecked[j + yIndex * areaColumn])
-            //     {
-            //         isValid = false;
 
-            //         break;
-            //     }
-            // }
+            if (j >= areaRow)
+            {
+                isValid = false;
+
+                break;
+            }
+            else
+            {
+                if (isTilesChecked[xIndex + j * areaColumn])
+                {
+                    isValid = false;
+
+                    break;
+                }
+            }
         }
 
         return isValid;
