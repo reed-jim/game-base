@@ -11,6 +11,10 @@ public static class GameConstants
 
     #region POOLING
     public static string BOOSTER = "Booster";
+    public static string VEHICLE_ENGINE_SOUND = "Vehicle Engine Sound";
+    public static string HIT_OBSTACLE_SOUND = "Hit Obstacle Sound";
+    public static string GET_IN_VEHICLE_SOUND = "Get In Vehicle Sound";
+    public static string BUS_MOVE_OUT_SOUND = "Bus Move Out Sound";
     #endregion
 
     #region COMMON TEXT

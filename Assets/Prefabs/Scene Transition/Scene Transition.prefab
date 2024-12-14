@@ -49,8 +49,8 @@ MonoBehaviour:
   container: {fileID: 3047112275583075511}
   loadingTextRT: {fileID: 819794503199794555}
   fadeBackground: {fileID: 6455071809919310629}
-  startDelay: 1
-  fadeOutDuration: 1
+  startDelay: 2
+  fadeOutDuration: 0.5
 --- !u!1 &875232279484972525
 GameObject:
   m_ObjectHideFlags: 0
@@ -85,7 +85,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 300}
+  m_AnchoredPosition: {x: 0, y: -1140}
   m_SizeDelta: {x: 900, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9191988570236947885
@@ -246,14 +246,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.11764706, g: 0.11764706, b: 0.11764706, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: db4de9c886e02774c8dca5af299f703b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

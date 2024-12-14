@@ -73,7 +73,11 @@ public class ObjectPoolingEverything : MonoBehaviour
                     instance._currentPoolGroupItemIndex[identifier] = 0;
                 }
 
-                return group.Value[currentPoolGroupItemIndex];
+                GameObject targetObject = group.Value[currentPoolGroupItemIndex];
+
+                targetObject.SetActive(true);
+
+                return targetObject;
             }
         }
 
@@ -109,6 +113,7 @@ public struct PrefabWithIdentifier
 {
     [SerializeField] private GameObject prefab;
     [SerializeField] private string identifier;
+    [SerializeField] private int poolSize;
 
     public GameObject Prefab => prefab;
     public string Identifier => identifier;

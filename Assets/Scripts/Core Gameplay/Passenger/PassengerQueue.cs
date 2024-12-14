@@ -204,6 +204,11 @@ public class PassengerQueue : MonoBehaviour
                     continue;
                 }
 
+                if (!vehicle.IsParked)
+                {
+                    continue;
+                }
+
                 if (vehicle.IsFull())
                 {
                     continue;
