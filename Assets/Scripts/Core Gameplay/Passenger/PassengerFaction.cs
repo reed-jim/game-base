@@ -31,23 +31,23 @@ public class PassengerFaction : MonoBehaviour
 
         if (faction == GameFaction.Red)
         {
-            characterMaterialPropertyBlock.SetColor(Color.red);
+            characterMaterialPropertyBlock.SetColor(GameConstants.SAFERIO_RED);
         }
         else if (faction == GameFaction.Green)
         {
-            characterMaterialPropertyBlock.SetColor(Color.green);
+            characterMaterialPropertyBlock.SetColor(GameConstants.SAFERIO_GREEN);
         }
         else if (faction == GameFaction.Orange)
         {
-            characterMaterialPropertyBlock.SetColor(new Color(255f / 255, 120f / 255, 0f / 255, 1));
+            characterMaterialPropertyBlock.SetColor(GameConstants.SAFERIO_ORANGE);
         }
         else if (faction == GameFaction.Purple)
         {
-            characterMaterialPropertyBlock.SetColor(new Color(200f / 255, 0f / 255, 255f / 255, 1));
+            characterMaterialPropertyBlock.SetColor(GameConstants.SAFERIO_PURPLE);
         }
         else if (faction == GameFaction.Blue)
         {
-            characterMaterialPropertyBlock.SetColor(Color.blue);
+            characterMaterialPropertyBlock.SetColor(GameConstants.SAFERIO_BLUE);
         }
 
         _faction = faction;

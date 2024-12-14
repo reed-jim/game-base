@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using PrimeTween;
 using UnityEngine;
 using static GameEnum;
@@ -7,6 +8,8 @@ using static GameEnum;
 public class Bus : BaseVehicle
 {
     [SerializeField] private VehicleFaction vehicleFaction;
+
+    [SerializeField] private PassengerInVehicle[] passengers;
 
     #region PRIVATE FIELD
     private ParkingSlotManager _parkingSlotManager;
@@ -66,7 +69,7 @@ public class Bus : BaseVehicle
             yield return waitForSeconds;
         }
 
-        Tween.Custom(transform.eulerAngles.y, _parkingSlot.transform.eulerAngles.y, duration: 0.5f, onValueChange: newVal =>
+        Tween.Custom(transform.eulerAngles.y, _parkingSlot.transform.eulerAngles.y - 25f, duration: 0.5f, onValueChange: newVal =>
         {
             transform.eulerAngles = new Vector3(transform.eulerAngles.x, newVal, transform.eulerAngles.z);
         });
@@ -98,6 +101,16 @@ public class Bus : BaseVehicle
 
     public override void GetInVehicle()
     {
+        if (_confirmedNumberSeatFilled == 0)
+        {
+            directionArrow.SetActive(false);
+
+            InvokeVehicleRoofFillEvent();
+        }
+
+        passengers[_confirmedNumberSeatFilled].gameObject.SetActive(true);
+        passengers[_confirmedNumberSeatFilled].SetColor(FactionUtility.GetColorForFaction(vehicleFaction.Faction));
+
         _confirmedNumberSeatFilled++;
 
         if (_confirmedNumberSeatFilled == numberSeat)

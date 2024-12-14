@@ -24,6 +24,13 @@ public static class GameConstants
     public static Color PRIMARY_TEXT = new Color(130f / 255, 255f / 255, 130f / 255, 1);
     public static Color ERROR_BACKGROUND = new Color(90f / 255, 40f / 255, 40f / 255, 1);
     public static Color ERROR_TEXT = new Color(255f / 255, 140f / 255, 140f / 255, 1);
+
+
+    public static Color SAFERIO_RED = new Color(255f / 255, 90f / 255, 90f / 255, 1);
+    public static Color SAFERIO_GREEN = new Color(90f / 255, 255f / 255, 90f / 255, 1);
+    public static Color SAFERIO_ORANGE = new Color(255f / 255, 120f / 255, 0f / 255, 1);
+    public static Color SAFERIO_PURPLE = new Color(200f / 255, 0f / 255, 255f / 255, 1);
+    public static Color SAFERIO_BLUE = new Color(90f / 255, 90f / 255, 255f / 255, 1);
     #endregion
 
     #region OBJECT POOLING

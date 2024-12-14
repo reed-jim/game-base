@@ -124,7 +124,7 @@ public class PassengerQueue : MonoBehaviour
 
             float time = 0.3f + (2 + 0.2f * index) * (1 - passenger.CurrentPathPercent);
 
-            time = Mathf.Min(time, 3);
+            time = Mathf.Min(time, 2.5f);
 
             Tween tween = Tween.Custom(passenger.CurrentPathPercent, 1 - distancePercentBetweenTwoPassenger * index, duration: time, ease: Ease.Linear, onValueChange: newVal =>
             {
@@ -162,7 +162,7 @@ public class PassengerQueue : MonoBehaviour
 
                 float time = 0.3f + (2 + 0.2f * index) * (1 - passenger.CurrentPathPercent);
 
-                time = Mathf.Min(time, 3);
+                time = Mathf.Min(time, 2.5f);
 
                 Tween tween = Tween.Custom(passenger.CurrentPathPercent, 1 - distancePercentBetweenTwoPassenger * index, duration: time, ease: Ease.Linear, onValueChange: newVal =>
                 {
@@ -220,7 +220,7 @@ public class PassengerQueue : MonoBehaviour
 
                     IsFound = true;
 
-                    await Task.Delay(80);
+                    await Task.Delay(20);
 
                     break;
                 }
