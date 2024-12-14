@@ -1,9 +1,14 @@
+using System.Threading.Tasks;
+using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class LevelLoader : MonoBehaviour
 {
+    [SerializeField] private NavMeshSurface navMeshSurface;
+
+    [Header("SCRIPTABLE OBJECT")]
     [SerializeField] private IntVariable currentLevel;
 
     private void Awake()
@@ -20,6 +25,8 @@ public class LevelLoader : MonoBehaviour
             if (op.Status == AsyncOperationStatus.Succeeded)
             {
                 GameObject loadedObject = Instantiate(op.Result, transform.position, Quaternion.identity);
+
+                // navMeshSurface.BuildNavMesh();
             }
         };
     }

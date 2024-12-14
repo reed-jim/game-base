@@ -6,6 +6,7 @@ using static GameEnum;
 public abstract class BaseVehicle : MonoBehaviour
 {
     [SerializeField] protected NavMeshAgent navMeshAgent;
+    [SerializeField] protected NavMeshObstacle navMeshObstacle;
     [SerializeField] protected GameObject directionArrow;
 
     [Header("CUSTOMIZE")]

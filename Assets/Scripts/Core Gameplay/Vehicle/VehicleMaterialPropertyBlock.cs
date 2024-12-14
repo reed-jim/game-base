@@ -38,6 +38,11 @@ public class VehicleMaterialPropertyBlock : MonoBehaviour
 
     public void SetColor(Color color)
     {
+        if (_propertyBlock == null)
+        {
+            Init();
+        }
+
         _propertyBlock.SetColor(colorReference, color);
 
         _renderer.SetPropertyBlock(_propertyBlock);

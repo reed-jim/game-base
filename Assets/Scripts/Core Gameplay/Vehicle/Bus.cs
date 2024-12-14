@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using PrimeTween;
 using UnityEngine;
 using static GameEnum;
@@ -15,6 +16,7 @@ public class Bus : BaseVehicle
     private ParkingSlotManager _parkingSlotManager;
     private ParkingSlot _parkingSlot;
     private float _initialScale;
+    private bool _isRotatingToTarget;
     #endregion
 
     #region ACTION
@@ -27,6 +29,26 @@ public class Bus : BaseVehicle
         ParkingSlotManager.bindParkingSlotManagerEvent += BindParkingSlotManager;
 
         _initialScale = transform.localScale.x;
+
+        navMeshAgent.enabled = false;
+    }
+
+    private void Update()
+    {
+        if (_isRotatingToTarget)
+        {
+            Quaternion targetRotation = Quaternion.Euler(new Vector3(0, -25f, 0));
+
+            if (Quaternion.Angle(transform.rotation, targetRotation) < 0.1f)
+            {
+                transform.rotation = targetRotation;
+                _isRotatingToTarget = false;
+            }
+            else
+            {
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 0.5f);
+            }
+        }
     }
 
     private void OnDestroy()
@@ -45,13 +67,13 @@ public class Bus : BaseVehicle
         return vehicleFaction.Faction;
     }
 
-    public override void Park()
+    public override async void Park()
     {
         ParkingSlot emptyParkingSlot = _parkingSlotManager.GetEmptyParkingSlot();
 
-        if (CheckFrontObstacle())
+        if (CheckFrontObstacle(out float distance))
         {
-            Tween.Position(transform, transform.position + transform.forward, duration: 0.3f, cycles: 2, cycleMode: CycleMode.Yoyo);
+            Tween.Position(transform, transform.position + 0.7f * distance * transform.forward, duration: 0.3f, cycles: 2, cycleMode: CycleMode.Yoyo);
 
             // Tween.Scale(transform, 1.1f * _initialScale, duration: 0.2f, cycles: 6, cycleMode: CycleMode.Yoyo);
 
@@ -62,6 +84,11 @@ public class Bus : BaseVehicle
         {
             _parkingSlotManager.ParkVehicle(this);
 
+            navMeshObstacle.enabled = false;
+
+            await Task.Delay(100);
+
+            navMeshAgent.enabled = true;
             navMeshAgent.destination = emptyParkingSlot.transform.position;
 
             _parkingSlot = emptyParkingSlot;
@@ -70,7 +97,7 @@ public class Bus : BaseVehicle
         }
     }
 
-    private bool CheckFrontObstacle()
+    private bool CheckFrontObstacle(out float distance)
     {
         RaycastHit obstacle;
 
@@ -78,10 +105,15 @@ public class Bus : BaseVehicle
 
         if (obstacle.collider == null)
         {
+            distance = 0;
+
+
             return false;
         }
         else
         {
+            distance = (obstacle.point - transform.position).magnitude;
+
             return true;
         }
     }
@@ -97,10 +129,9 @@ public class Bus : BaseVehicle
             yield return waitForSeconds;
         }
 
-        Tween.Custom(transform.eulerAngles.y, _parkingSlot.transform.eulerAngles.y - 25f, duration: 0.5f, onValueChange: newVal =>
-        {
-            transform.eulerAngles = new Vector3(transform.eulerAngles.x, newVal, transform.eulerAngles.z);
-        });
+        _isRotatingToTarget = true;
+
+        navMeshAgent.enabled = false;
 
         InvokeVehicleReachParkingSlotEvent();
 
@@ -109,6 +140,8 @@ public class Bus : BaseVehicle
 
     private void MoveOut()
     {
+        navMeshAgent.enabled = true;
+
         navMeshAgent.destination = transform.position + new Vector3(50, 0, -20);
 
         vehicleLeftParkingSlotEvent?.Invoke(this);

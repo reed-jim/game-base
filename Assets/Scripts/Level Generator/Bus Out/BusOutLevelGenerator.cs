@@ -112,8 +112,8 @@ public class BusOutLevelGeneratorEditor : EditorWindow
 
                         Vector3 position = new Vector3();
 
-                        position.x = (xIndex + 1) * tileSize;
-                        position.z = yIndex * tileSize;
+                        position.x = (xIndex + 1) * tileSize - 0.5f * areaColumn * tileSize;
+                        position.z = yIndex * tileSize - 0.5f * areaRow * tileSize;
 
                         GameObject bus = (GameObject)PrefabUtility.InstantiatePrefab(busPrefab, busContainer);
                         // GameObject bus = Instantiate(busPrefab, busContainer);
@@ -146,8 +146,8 @@ public class BusOutLevelGeneratorEditor : EditorWindow
 
                         Vector3 position = new Vector3();
 
-                        position.x = xIndex * tileSize;
-                        position.z = (yIndex + 1) * tileSize;
+                        position.x = xIndex * tileSize - 0.5f * areaColumn * tileSize;
+                        position.z = (yIndex + 1) * tileSize - 0.5f * areaRow * tileSize;
 
                         GameObject bus = (GameObject)PrefabUtility.InstantiatePrefab(busPrefab, busContainer);
 
