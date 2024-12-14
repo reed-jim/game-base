@@ -14,6 +14,7 @@ public class Bus : BaseVehicle
     #region PRIVATE FIELD
     private ParkingSlotManager _parkingSlotManager;
     private ParkingSlot _parkingSlot;
+    private float _initialScale;
     #endregion
 
     #region ACTION
@@ -24,6 +25,8 @@ public class Bus : BaseVehicle
     {
         PassengerQueue.noPassengerLeftForFactionEvent += MoveOut;
         ParkingSlotManager.bindParkingSlotManagerEvent += BindParkingSlotManager;
+
+        _initialScale = transform.localScale.x;
     }
 
     private void OnDestroy()
@@ -46,6 +49,15 @@ public class Bus : BaseVehicle
     {
         ParkingSlot emptyParkingSlot = _parkingSlotManager.GetEmptyParkingSlot();
 
+        if (CheckFrontObstacle())
+        {
+            Tween.Position(transform, transform.position + transform.forward, duration: 0.3f, cycles: 2, cycleMode: CycleMode.Yoyo);
+
+            // Tween.Scale(transform, 1.1f * _initialScale, duration: 0.2f, cycles: 6, cycleMode: CycleMode.Yoyo);
+
+            return;
+        }
+
         if (emptyParkingSlot != null)
         {
             _parkingSlotManager.ParkVehicle(this);
@@ -55,6 +67,22 @@ public class Bus : BaseVehicle
             _parkingSlot = emptyParkingSlot;
 
             StartCoroutine(CheckingReachingParkingSlot());
+        }
+    }
+
+    private bool CheckFrontObstacle()
+    {
+        RaycastHit obstacle;
+
+        Physics.Raycast(transform.position + new Vector3(0, 0.3f, 0), transform.forward, out obstacle, 10);
+
+        if (obstacle.collider == null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 
