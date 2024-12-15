@@ -2,13 +2,20 @@ using UnityEngine;
 
 public class GameEnum : MonoBehaviour
 {
-    public enum ScreenRoute {
+    public enum ScreenRoute
+    {
         Waiting,
         Lobby,
-        LobbyRoom
+        LobbyRoom,
+        Screen1,
+        Screen2,
+        Screen3,
+        Screen4,
+        Screen5,
     }
 
-    public enum GameFaction {
+    public enum GameFaction
+    {
         Red,
         Blue,
         Green,
@@ -16,7 +23,8 @@ public class GameEnum : MonoBehaviour
         Orange
     }
 
-    public enum CharacterAnimationState {
+    public enum CharacterAnimationState
+    {
         Idle = 0,
         Walking = 1
     }

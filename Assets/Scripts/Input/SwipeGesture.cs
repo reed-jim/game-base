@@ -6,6 +6,9 @@ using UnityEngine.EventSystems;
 
 public class SwipeGesture : MonoBehaviour
 {
+    [Header("CUSTOMIZE")]
+    [SerializeField] private float threshold;
+
     private Vector2 _moveDirection;
 
     private Vector2 _lastPosition;
@@ -39,6 +42,11 @@ public class SwipeGesture : MonoBehaviour
             {
                 _moveDirection = mousePosition - _lastPosition;
 
+                if (_moveDirection.magnitude < threshold)
+                {
+                    return;
+                }
+
                 swipeGestureEvent?.Invoke(_moveDirection);
 
                 _lastPosition = mousePosition;
@@ -52,9 +60,10 @@ public class SwipeGesture : MonoBehaviour
             {
                 stopSwipeGestureEvent?.Invoke();
 
-                _isLastPositionExist = false;
                 _isSwipingLastFrame = false;
             }
+
+            _isLastPositionExist = false;
         }
     }
 
