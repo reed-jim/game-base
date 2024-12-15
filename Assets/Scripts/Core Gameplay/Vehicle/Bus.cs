@@ -142,9 +142,9 @@ public class Bus : BaseVehicle
 
         navMeshAgent.enabled = false;
 
-        InvokeVehicleReachParkingSlotEvent();
-
         _isParked = true;
+
+        InvokeVehicleReachParkingSlotEvent();
     }
 
     private void MoveOut()
