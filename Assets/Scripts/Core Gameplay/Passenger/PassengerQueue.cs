@@ -188,7 +188,7 @@ public class PassengerQueue : MonoBehaviour
             }
         }
     }
-
+    
     private async void OnVehicleArrivedParkingSlot()
     {
         while (_passengers.Count > 0)

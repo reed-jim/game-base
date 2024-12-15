@@ -78,14 +78,14 @@ public class Bus : BaseVehicle
 
             // Tween.Scale(transform, 1.1f * _initialScale, duration: 0.2f, cycles: 6, cycleMode: CycleMode.Yoyo);
 
-            AudioSource hitObstacleSound = ObjectPoolingEverything.GetFromPool(GameConstants.HIT_OBSTACLE_SOUND).GetComponent<AudioSource>();
+            AudioSource hitObstacleSound = ObjectPoolingEverything.GetFromPool<AudioSource>(GameConstants.HIT_OBSTACLE_SOUND);
 
             hitObstacleSound.Play();
 
             return;
         }
 
-        AudioSource engineSound = ObjectPoolingEverything.GetFromPool(GameConstants.VEHICLE_ENGINE_SOUND).GetComponent<AudioSource>();
+        AudioSource engineSound = ObjectPoolingEverything.GetFromPool<AudioSource>(GameConstants.VEHICLE_ENGINE_SOUND);
 
         engineSound.Play();
 
@@ -181,7 +181,7 @@ public class Bus : BaseVehicle
         passengers[_confirmedNumberSeatFilled].gameObject.SetActive(true);
         passengers[_confirmedNumberSeatFilled].SetColor(FactionUtility.GetColorForFaction(vehicleFaction.Faction));
 
-        AudioSource getInVehicleSound = ObjectPoolingEverything.GetFromPool(GameConstants.GET_IN_VEHICLE_SOUND).GetComponent<AudioSource>();
+        AudioSource getInVehicleSound = ObjectPoolingEverything.GetFromPool<AudioSource>(GameConstants.GET_IN_VEHICLE_SOUND);
 
         getInVehicleSound.Play();
 
@@ -189,7 +189,7 @@ public class Bus : BaseVehicle
 
         if (_confirmedNumberSeatFilled == numberSeat)
         {
-            AudioSource busMoveOutSound = ObjectPoolingEverything.GetFromPool(GameConstants.BUS_MOVE_OUT_SOUND).GetComponent<AudioSource>();
+            AudioSource busMoveOutSound = ObjectPoolingEverything.GetFromPool<AudioSource>(GameConstants.VEHICLE_MOVE_OUT_SOUND);
 
             busMoveOutSound.Play();
 

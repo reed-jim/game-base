@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,13 +10,7 @@ public enum SaferioPrefabIdentifier
 public class ObjectPoolingEverything : MonoBehaviour
 {
     private static ObjectPoolingEverything instance;
-
-    private int _poolSize;
-
-    [SerializeField] private PrefabWithIdentifier[] prefabsWithIdentifier;
-    private Dictionary<string, GameObject[]> _poolGroup;
-
-    private Dictionary<string, int> _currentPoolGroupItemIndex;
+    private Dictionary<string, ObjectPool> _poolGroup;
 
     private void Awake()
     {
@@ -26,85 +19,32 @@ public class ObjectPoolingEverything : MonoBehaviour
             instance = this;
         }
 
-        _poolSize = 3;
-
-        Spawn();
+        _poolGroup = new Dictionary<string, ObjectPool>();
 
         DontDestroyOnLoad(gameObject);
     }
 
-    private void Spawn()
+    public static void AddToPool(string key, ObjectPool pool)
     {
-        _poolGroup = new Dictionary<string, GameObject[]>();
-        _currentPoolGroupItemIndex = new Dictionary<string, int>();
-
-        foreach (var prefabWithIdentifier in prefabsWithIdentifier)
-        {
-            GameObject[] poolGroupItems = new GameObject[_poolSize];
-
-            for (int j = 0; j < _poolSize; j++)
-            {
-                GameObject spawnItem = Instantiate(prefabWithIdentifier.Prefab, transform);
-
-                spawnItem.name = $"{prefabWithIdentifier.Prefab.name} {j}";
-
-                spawnItem.SetActive(false);
-
-                poolGroupItems[j] = spawnItem;
-            }
-
-            _poolGroup.Add(prefabWithIdentifier.Identifier, poolGroupItems);
-            _currentPoolGroupItemIndex.Add(prefabWithIdentifier.Identifier, 0);
-        }
+        instance._poolGroup.Add(key, pool);
     }
 
-    public static GameObject GetFromPool(string identifier)
+    public static GameObject SpawnGameObject(GameObject prefab)
+    {
+        return Instantiate(prefab, instance.transform);
+    }
+
+    public static T GetFromPool<T>(string identifier)
     {
         foreach (var group in instance._poolGroup)
         {
             if (identifier == group.Key)
             {
-                int currentPoolGroupItemIndex = instance._currentPoolGroupItemIndex[identifier];
-
-                instance._currentPoolGroupItemIndex[identifier]++;
-
-                if (instance._currentPoolGroupItemIndex[identifier] >= instance._poolSize)
-                {
-                    instance._currentPoolGroupItemIndex[identifier] = 0;
-                }
-
-                GameObject targetObject = group.Value[currentPoolGroupItemIndex];
-
-                targetObject.SetActive(true);
-
-                return targetObject;
+                return group.Value.GetFromPool<T>();
             }
         }
 
-        return null;
-    }
-
-    public static GameObject GetFromPool(GameObject referencePrefab)
-    {
-        // foreach (var group in instance._poolGroup)
-        // {
-        //     if (identifier == group.Key)
-        //     {
-        //         return group.Value[0];
-        //     }
-        // }
-
-        return null;
-    }
-
-    public static void SetPoolSize(int size)
-    {
-        instance._poolSize = size;
-    }
-
-    public static void RegisterPoolItem(string groupIdentifer, GameObject prefab)
-    {
-
+        return default;
     }
 }
 
@@ -117,4 +57,58 @@ public struct PrefabWithIdentifier
 
     public GameObject Prefab => prefab;
     public string Identifier => identifier;
+}
+
+[Serializable]
+public class ObjectPool
+{
+    private GameObjectWithComponent[] _pool;
+
+    private int _currentIndex;
+
+    public void Init<T>(GameObject prefab, int poolSize)
+    {
+        _pool = new GameObjectWithComponent[poolSize];
+
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject gameObject = ObjectPoolingEverything.SpawnGameObject(prefab);
+
+            GameObjectWithComponent gameObjectWithComponent = new GameObjectWithComponent();
+
+            gameObjectWithComponent.gameObject = gameObject;
+            gameObjectWithComponent.component = gameObject.GetComponent<T>();
+
+            _pool[i] = gameObjectWithComponent;
+
+            gameObject.SetActive(false);
+        }
+    }
+
+    public T GetFromPool<T>()
+    {
+        _pool[_currentIndex].gameObject.SetActive(true);
+
+        T componentToGet = (T)_pool[_currentIndex].component;
+
+        _currentIndex++;
+
+        if (_currentIndex >= _pool.Length)
+        {
+            _currentIndex = 0;
+        }
+
+        return componentToGet;
+    }
+
+    // public void ReturnPool(GameObject gameObject)
+    // {
+
+    // }
+}
+
+public class GameObjectWithComponent
+{
+    public GameObject gameObject;
+    public object component;
 }

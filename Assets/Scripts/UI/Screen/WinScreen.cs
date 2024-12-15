@@ -53,7 +53,7 @@ namespace Saferio.Prototype.ColoringBook
 
         private void PlaySoundWin()
         {
-            AudioSource selectSound = ObjectPoolingEverything.GetFromPool("WinSound").GetComponent<AudioSource>();
+            AudioSource selectSound = ObjectPoolingEverything.GetFromPool<AudioSource>("WinSound");
 
             selectSound.gameObject.SetActive(true);
 
